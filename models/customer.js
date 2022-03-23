@@ -13,7 +13,7 @@ const Customer = mongoose.model('Customer', new mongoose.Schema({
         required : true,
         min : 10,
     },
-}));
+}, { versionKey: false }));
 
 // function validateInput(customer){
 //     const schema = {

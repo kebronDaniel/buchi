@@ -6,8 +6,16 @@ const { Customer } = require('../models/customer');
 const { Pet } = require('../models/pet');
 
 router.get('', async(req, res) => {
-    const adopts = await Adopt.find().sort('-adoption_date');
-    res.send(adopts);
+    // const from_date = req.query.from_date+"T21:00:00.000+00:00";
+    // const to_date = req.query.to_date+"T21:00:00.000+00:00";
+    const adopts = await Adopt
+        .find({adoption_date : 
+            { $gte: req.query.from_date+"T21:00:00.000+00:00", $lte: req.query.to_date+"T21:00:00.000+00:00" }})
+            .select('-adoption_date, -_id, ');
+    if (adopts.length > 0) {
+        res.send({"status" : "success", "data" : adopts});
+    }
+    else res.send("No pets found in the date you are looking for");
 });
 
 router.get('/:id', async(req, res) => {
@@ -27,6 +35,9 @@ router.post('', async(req, res) => {
     const pet = await Pet.findOne({_id : req.body.petId});
     if(!pet) return res.status(404).send("invalid pet Id");
 
+    const today = new Date();
+    const date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+
     const adopt = new Adopt({
         customer : {
             _id : customer._id,
@@ -39,10 +50,13 @@ router.post('', async(req, res) => {
             age : pet.age,
             goodWithChildren : pet.goodWithChildren,
             photo : pet.photo
-        }
+        },
+
+        adoption_date : date
+
     });
     const result = await adopt.save();
-    res.send(result);
+    res.send({"status" : "success", "adoption_id" : result._id});
 });
 
 

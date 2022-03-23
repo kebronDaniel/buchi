@@ -24,7 +24,7 @@ router.post('', async(req, res) => {
         phone : req.body.phone,
     });
     const result = await customer.save();
-    res.send(result);
+    res.send({"status": "success", "customer_id" : result._id});
 });
 
 router.put('/:id', async(req, res) => {

@@ -27,9 +27,9 @@ const Pet = mongoose.model('Pet', new mongoose.Schema({
         default : true
     },
     photo : {
-        type : String
+        type : [String]
     }
-}));
+}, { versionKey: false }));
 
 // function validateInput(pet){
 //     const schema = {

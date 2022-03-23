@@ -54,9 +54,9 @@ const Adopt = mongoose.model('Adopt',new mongoose.Schema({
     adoption_date : {
         type : Date,
         required : true,
-        default : Date.now
-    }
-}));
+    },
+
+}, { versionKey: false } ));
 
 // function validateInput(customer){
 //     const schema = {
