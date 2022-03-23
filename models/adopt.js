@@ -1,16 +1,54 @@
 const mongoose = require('mongoose');
-const customer = require('./customer');
-const pet = require('./pet');
+const {Customer} = require('./customer');
+const {Pet} = require('./pet');
 
 const Adopt = mongoose.model('Adopt',new mongoose.Schema({
     customer : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : 'customer',
+        type : new mongoose.Schema({
+            name : {
+                type : String,
+                required : true,
+                minlength : 4,
+                maxlength : 50
+            },
+            phone : {
+                type : Number,
+                required : true,
+                min : 10,
+            }, 
+        }),
         required : true
     },
     pet : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : 'pet',
+        type : new mongoose.Schema({
+            type : {
+                type : String,
+                required : true,
+                lowercase : true,
+                minlength : 2,
+                maxlength : 50
+            }, 
+            gender : {
+                type : String,
+                required : true,
+                lowercase : true,
+                minlength : 2,
+                maxlength : 6
+            },
+            age : {
+                type : Number,
+                required : true,
+                min : 0,
+            },
+            goodWithChildern : {
+                type : Boolean,
+                required : true,
+                default : true
+            },
+            photo : {
+                type : String
+            }
+        }),
         required : true
     },
     adoption_date : {

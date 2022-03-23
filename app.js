@@ -13,7 +13,7 @@ mongoose.connect('mongodb://localhost/buchi').
 app.use(express.json());
 app.use(express.urlencoded({extended : true}));
 app.use(express.static('public'));
-// app.use('/buchi.com/api/adopts', adopts);
+app.use('/buchi.com/api/adopts', adopts);
 app.use('/buchi.com/api/customers', customers);
 app.use('/buchi.com/api/pets', pets);
 
