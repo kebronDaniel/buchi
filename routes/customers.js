@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const {Customer} = require('../models/customer');
+const {Customer,validate} = require('../models/customer');
 
 router.get('', async(req, res) => {
     const customers = await Customer.find(req.query).select({name : 1, _id : -1});
@@ -16,8 +16,10 @@ router.get('/:id', async(req, res) => {
 
 router.post('', async(req, res) => {
     
-    // const { error } = validate(req.body);
-    // if(error) return res.status(400).send(error.details[0].messages);
+    if (validate(req.body).error) {
+       res.send(validate(req.body).error.details[0].message);
+       return;
+    }
 
     const customer = new Customer({
         name : req.body.name,
@@ -29,8 +31,10 @@ router.post('', async(req, res) => {
 
 router.put('/:id', async(req, res) => {
 
-    // const { error } = validate(req.body);
-    // if(error) return res.status(400).send(error.details[0].messages);
+    if (validate(req.body).error) {
+        res.send(validate(req.body).error.details[0].message);
+        return;
+    }
 
     const customer =  await Customer.update({_id : req.params.id}, {
         $set : {

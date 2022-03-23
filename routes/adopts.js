@@ -1,33 +1,38 @@
+const Joi = require('joi');
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const {Adopt} = require('../models/adopt');
+const {Adopt,validate} = require('../models/adopt');
 const { Customer } = require('../models/customer');
 const { Pet } = require('../models/pet');
 
 router.get('', async(req, res) => {
-    // const from_date = req.query.from_date+"T21:00:00.000+00:00";
-    // const to_date = req.query.to_date+"T21:00:00.000+00:00";
-    const adopts = await Adopt
-        .find({adoption_date : 
-            { $gte: req.query.from_date+"T21:00:00.000+00:00", $lte: req.query.to_date+"T21:00:00.000+00:00" }})
-            .select('-adoption_date, -_id, ');
-    if (adopts.length > 0) {
-        res.send({"status" : "success", "data" : adopts});
-    }
-    else res.send("No pets found in the date you are looking for");
+
+    const allPets = await Adopt.find(()=>{
+        if (req.query) {
+            return {adoption_date : 
+                        { $gte: req.query.from_date+"T21:00:00.000+00:00", $lte: req.query.to_date+"T21:00:00.000+00:00" }
+                    }
+        }
+        return;
+    })
+        .select('-adoption_date, -_id');
+    res.send({"status" : "success", "data" : allPets});
+
 });
 
 router.get('/:id', async(req, res) => {
-    const adopt =  await Adopt.findOne({_id : req.params.id}).select();
+    const adopt =  await Adopt.findOne({_id : req.params.id}).select('-_id');
     if (!adopt) return res.status(404).send("Adopt request not found");
     res.send(adopt);
 });
 
 router.post('', async(req, res) => {
-    
-    // const { error } = validate(req.body);
-    // if(error) return res.status(400).send(error.details[0].messages);
+
+    if (validate(req.body).error) {
+        res.send(validate(req.body).error.details[0].message);
+        return;
+    }
 
     const customer = await Customer.findOne({_id : req.body.customerId});
     if(!customer) return res.status(404).send("Invalid customer Id");
@@ -62,8 +67,10 @@ router.post('', async(req, res) => {
 
 router.put('/:id', async(req, res) => {
 
-    // const { error } = validate(req.body);
-    // if(error) return res.status(400).send(error.details[0].messages);
+    if (validate(req.body).error) {
+        res.send(validate(req.body).error.details[0].message);
+        return;
+    }
 
     const customer = await Customer.findOne({_id : req.body.customerId});
     if(!customer) return res.status(404).send("Invalid customer Id");

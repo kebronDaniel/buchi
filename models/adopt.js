@@ -1,3 +1,4 @@
+const Joi = require('joi');
 const mongoose = require('mongoose');
 const {Customer} = require('./customer');
 const {Pet} = require('./pet');
@@ -58,13 +59,18 @@ const Adopt = mongoose.model('Adopt',new mongoose.Schema({
 
 }, { versionKey: false } ));
 
-// function validateInput(customer){
-//     const schema = {
-//         name : Joi.string().min(4).max(50).required(),
-//         phone : Joi.string().min(10).max(15).required(),
-//     };
-//     return Joi.validate(customer, schema);
-// }
+function validate(adoption){
+    const schema = Joi.object({
+        customerId: Joi.string()
+            .alphanum()
+            .required(),
+        petId: Joi.string()
+            .alphanum()
+            .required(),
+    })
+    return schema.validate(adoption);
+}
+
 
 exports.Adopt = Adopt;
-// exports.validate = validateInput;
+exports.validate = validate;

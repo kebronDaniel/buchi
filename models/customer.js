@@ -5,8 +5,8 @@ const Customer = mongoose.model('Customer', new mongoose.Schema({
     name : {
         type : String,
         required : true,
-        minlength : 4,
-        maxlength : 50
+        minlength : 2,
+        maxlength : 30
     },
     phone : {
         type : Number,
@@ -15,13 +15,20 @@ const Customer = mongoose.model('Customer', new mongoose.Schema({
     },
 }, { versionKey: false }));
 
-// function validateInput(customer){
-//     const schema = {
-//         name : Joi.string().min(4).max(50).required(),
-//         phone : Joi.string().min(10).max(15).required(),
-//     };
-//     return Joi.validate(customer, schema);
-// }
+function validate(customer){
+    const schema = Joi.object({
+        name: Joi.string()
+            .min(2)
+            .max(30)
+            .required(),
+        phone : Joi.number()
+                .min(10)
+                .required()
+    })
+    return schema.validate(customer);
+}
+
+
 
 exports.Customer = Customer;
-// exports.validate = validateInput;
+exports.validate = validate;

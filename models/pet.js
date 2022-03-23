@@ -7,7 +7,7 @@ const Pet = mongoose.model('Pet', new mongoose.Schema({
         required : true,
         lowercase : true,
         minlength : 2,
-        maxlength : 50
+        maxlength : 30
     }, 
     gender : {
         type : String,
@@ -31,16 +31,24 @@ const Pet = mongoose.model('Pet', new mongoose.Schema({
     }
 }, { versionKey: false }));
 
-// function validateInput(pet){
-//     const schema = {
-//         type : Joi.string().min(2).max(50).required(),
-//         gender : Joi.string().min(2).max(5).required(),
-//         age : Joi.number().min(0).max(50).required(),
-//         gender : Joi.string().min(2).max(5).required(),
-//         photo : Joi.string().required()
-//     };
-//     return Joi.validate(pet, schema);
-// }
+function validate(pet){
+    const schema = Joi.object({
+        type: Joi.string()
+            .min(2)
+            .max(30)
+            .required(),
+        gender: Joi.string()
+            .min(2)
+            .max(6)
+            .required(),
+        age : Joi.number()
+                .min(0)
+                .required(),
+        goodWithChildern : Joi.boolean().required()
+    })
+    return schema.validate(pet);
+}
+
 
 exports.Pet = Pet;
-// exports.validate = validateInput;
+exports.validate = validate;

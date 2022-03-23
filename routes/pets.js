@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const {Pet} = require('../models/pet');
+const {Pet,validate} = require('../models/pet');
 
 router.get('', async(req, res) => {
     const limit = parseInt(req.query.limit);
@@ -23,8 +23,10 @@ router.get('/:id/:limit', async(req, res) => {
 
 router.post('', async(req, res) => {
     
-    // const { error } = validate(req.body);
-    // if(error) return res.status(400).send(error.details[0].messages);
+    if (validate(req.body).error) {
+        res.send(validate(req.body).error.details[0].message);
+        return;
+    }
 
     const pet = new Pet({
         type : req.body.type,
@@ -42,8 +44,10 @@ router.post('', async(req, res) => {
 
 router.put('/:id', async(req, res) => {
 
-    // const { error } = validate(req.body);
-    // if(error) return res.status(400).send(error.details[0].messages);
+    if (validate(req.body).error) {
+        res.send(validate(req.body).error.details[0].message);
+        return;
+    }
 
     const pet =  await Pet.update({_id : req.params.id}, {
         $set : {
