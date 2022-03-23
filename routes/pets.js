@@ -4,9 +4,10 @@ const mongoose = require('mongoose');
 const {Pet} = require('../models/pet');
 
 router.get('', async(req, res) => {
-    const pets = await Pet.find().select();
+    const pets = await Pet.find(req.query).select();
     res.send(pets);
 });
+
 
 router.get('/:id', async(req, res) => {
     const pet =  await Pet.findOne({_id : req.params.id}).select();

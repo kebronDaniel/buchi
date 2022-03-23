@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const {Customer} = require('../models/customer');
 
 router.get('', async(req, res) => {
-    const customers = await Customer.find().select({name : 1, _id : -1});
+    const customers = await Customer.find(req.query).select({name : 1, _id : -1});
     res.send(customers);
 });
 
