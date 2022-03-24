@@ -7,7 +7,7 @@ const {Customer,validate} = require('../models/customer');
 
 async function getAllCustomers(req, res) {
     const customers = await Customer.find(req.query).select({name : 1, _id : -1});
-    res.send(customers);
+    res.send(customers); 
 }
 router.get('', getAllCustomers);
 
@@ -25,7 +25,8 @@ async function createCustomer(req, res){
        res.send(validate(req.body).error.details[0].message);
        return;
     }
-
+    console.log(validate(req.body));
+    
     const customer = new Customer({
         name : req.body.name,
         phone : req.body.phone,
@@ -59,4 +60,7 @@ async function deleteCustomer(req, res) {
 }
 router.delete('/:id', deleteCustomer);
 
+
+module.exports.getAllCustomers = getAllCustomers;
+module.exports.getCustomer = getCustomer;
 module.exports = router;

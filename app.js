@@ -22,6 +22,8 @@ app.use('/buchi.com/api/adopts', adopts);
 app.use('/buchi.com/api/customers', customers);
 app.use('/buchi.com/api/pets', pets);
 
+// const port = process.env.PORT ;
+// app.listen(port, ()=>{console.log(`Listening at port ${port}`)});
 
-const port = process.env.PORT ;
-app.listen(port, ()=>{console.log(`Listening at port ${port}`)});
+
+exports.app = app;

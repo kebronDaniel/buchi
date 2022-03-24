@@ -16,7 +16,7 @@ async function getAllAdopts(req, res) {
         return;
     })
         .select('-adoption_date, -_id');
-    res.send({"status" : "success", "data" : allPets});
+    res.status(200).send({"status" : "success", "data" : allPets});
 
 }
 router.get('', getAllAdopts);

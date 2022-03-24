@@ -39,7 +39,7 @@ async function createPet(req, res){
     });
     const result = await pet.save();
     if (result) {
-        res.send({"status" : "success", "pet_id" : pet._id});
+        res.status(200).send({"status" : "success", "pet_id" : pet._id});
     }
     else res.status(500).send("Something went wrong while saving the new pet, please try again");
 }
@@ -72,4 +72,6 @@ async function deletePet(req, res){
 }
 router.delete('/:id', deletePet);
 
+
+module.exports.createPet = createPet;
 module.exports = router;
