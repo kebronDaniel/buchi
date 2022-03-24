@@ -1,8 +1,34 @@
 const express = require('express');
-const { func } = require('joi');
 const router = express.Router();
 const mongoose = require('mongoose');
 const {Pet,validate} = require('../models/pet');
+const multer = require('multer');
+
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+      cb(null, './uploads/');
+    },
+    filename: function(req, file, cb) {
+      cb(null, new Date().toISOString() + file.originalname);
+    }
+});
+
+const fileFilter = (req, file, cb) => {
+    // reject a file
+    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+      cb(null, true);
+    } else {
+      cb(null, false);
+    }
+};
+
+const upload = multer({
+    storage: storage,
+    limits: {
+      fileSize: 1024 * 1024 * 5
+    },
+    fileFilter: fileFilter
+});
 
 async function getAllPets(req, res) {
     const limit = parseInt(req.query.limit);
@@ -43,7 +69,7 @@ async function createPet(req, res){
     }
     else res.status(500).send("Something went wrong while saving the new pet, please try again");
 }
-router.post('', createPet);
+router.post('',upload.single('productImage'),createPet);
 
 async function updatePet(req, res) {
 
@@ -73,5 +99,4 @@ async function deletePet(req, res){
 router.delete('/:id', deletePet);
 
 
-module.exports.createPet = createPet;
 module.exports = router;

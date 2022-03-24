@@ -21,7 +21,7 @@ const Pet = mongoose.model('Pet', new mongoose.Schema({
         required : true,
         min : 0,
     },
-    goodWithChildern : {
+    goodWithChildren : {
         type : Boolean,
         required : true,
         default : true
@@ -44,7 +44,7 @@ function validate(pet){
         age : Joi.number()
                 .min(0)
                 .required(),
-        goodWithChildern : Joi.boolean().required()
+        // goodWithChildern : Joi.boolean().required()
     })
     return schema.validate(pet);
 }

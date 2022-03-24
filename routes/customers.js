@@ -25,8 +25,7 @@ async function createCustomer(req, res){
        res.send(validate(req.body).error.details[0].message);
        return;
     }
-    console.log(validate(req.body));
-    
+
     const customer = new Customer({
         name : req.body.name,
         phone : req.body.phone,
