@@ -1,4 +1,3 @@
-const Joi = require('joi');
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
@@ -6,7 +5,7 @@ const {Adopt,validate} = require('../models/adopt');
 const { Customer } = require('../models/customer');
 const { Pet } = require('../models/pet');
 
-router.get('', async(req, res) => {
+async function getAllAdopts(req, res) {
 
     const allPets = await Adopt.find(()=>{
         if (req.query) {
@@ -19,15 +18,19 @@ router.get('', async(req, res) => {
         .select('-adoption_date, -_id');
     res.send({"status" : "success", "data" : allPets});
 
-});
+}
+router.get('', getAllAdopts);
 
-router.get('/:id', async(req, res) => {
+
+async function getAnAdopt(req, res) {
     const adopt =  await Adopt.findOne({_id : req.params.id}).select('-_id');
     if (!adopt) return res.status(404).send("Adopt request not found");
     res.send(adopt);
-});
+}
+router.get('/:id', getAnAdopt);
 
-router.post('', async(req, res) => {
+
+async function createAdopt(req, res) {
 
     if (validate(req.body).error) {
         res.send(validate(req.body).error.details[0].message);
@@ -62,10 +65,10 @@ router.post('', async(req, res) => {
     });
     const result = await adopt.save();
     res.send({"status" : "success", "adoption_id" : result._id});
-});
+}
+router.post('', createAdopt);
 
-
-router.put('/:id', async(req, res) => {
+async function updateAdopt(req, res) {
 
     if (validate(req.body).error) {
         res.send(validate(req.body).error.details[0].message);
@@ -95,11 +98,13 @@ router.put('/:id', async(req, res) => {
         }
     });
     res.send(adopt);
-});
+}
+router.put('/:id', updateAdopt);
 
-router.delete('/:id', async(req, res) => {
+async function deleteAdopt(req, res) {
     const adopt = await Adopt.deleteOne({_id : req.params.id});
     res.send(adopt);
-});
+}
+router.delete('/:id', deleteAdopt);
 
 module.exports = router;
