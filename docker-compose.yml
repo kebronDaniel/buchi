@@ -1,25 +1,23 @@
-version: '3.9'
+version: '3'
 
 services:
-  mongo_db:
-    container_name: db_container
-    image: mongo:latest
+  app:
+    container_name: app
     restart: always
-    volumes:
-      - mongo_db:/data/db
-  
-  api:
     build: .
-    ports:
-      - 5000:5000
-    environment:
-      PORT: 5000
-      DB_connection_string: 'mongodb://mongo_db:27017/buchi'
-    depends_on:
-      - mongo_db
+    ports: 
+      - '5000:5000'
+    links:
+      - mongo
 
-volumes:
-  mongo_db: {}
+  mongo:
+    container_name: mongo
+    image: mongo
+    volumes:
+      - ./data:data/db
+    ports:
+      - "27017:27017"
+
 
 
     
