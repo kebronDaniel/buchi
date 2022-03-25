@@ -9,15 +9,17 @@ services:
       - '5000:5000'
     links:
       - mongo
+    networks:
+      - buchi_network
 
   mongo:
     container_name: mongo
-    image: mongo
+    image: mvertes/alpine-mongo:latest
     volumes:
-      - ./data:data/db
-    ports:
-      - "27017:27017"
+      - ./dbdata:<absolute-path-to-local-storage>
+    networks:
+      - buchi_network
 
-
-
-    
+networks:
+  buchi_network:
+    driver: bridge
