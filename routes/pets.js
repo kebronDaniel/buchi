@@ -3,6 +3,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const {Pet,validate} = require('../models/pet');
 const multer = require('multer');
+const { path } = require('express/lib/application');
 
 
 
@@ -60,12 +61,17 @@ async function createPet(req, res){
         return;
     }
 
+    const files = req.files;
+    const photoUrls = [];
+    for (const file of files) {
+        photoUrls.push(`localhost:5000/${file.path}`);
+    }
     const pet = new Pet({
         type : req.body.type,
         gender : req.body.gender,
         age : req.body.age,
         goodWithChildren : req.body.goodWithChildren,
-        photo : [req.body.photo],
+        photo : photoUrls
     });
     const result = await pet.save();
     if (result) {
@@ -73,7 +79,7 @@ async function createPet(req, res){
     }
     else res.status(500).send("Something went wrong while saving the new pet, please try again");
 }
-router.post('',upload.array('Images', 4),createPet);
+router.post('',upload.array('Images'),createPet);
 
 async function updatePet(req, res) {
 
