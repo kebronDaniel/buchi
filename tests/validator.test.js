@@ -1,6 +1,3 @@
-const request = require('supertest');
-const {app} = require('../app');
-const mongoose = require('mongoose');
 const {validate} = require('../models/customer');
 
 // this one would check the data validator function before it has actually been sent to the DB to be proccessed.

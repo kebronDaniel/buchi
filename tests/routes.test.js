@@ -28,10 +28,14 @@ describe('Checking  routes', ()=>{
 
     test('should return a status code of 200 if the server has saved the new adoption', async ()=>{
         const responce = await request(app).post('/buchi.com/api/adopts').send({
+            // here insert any value that is stored locally to see work
             customerId : "6239dd4b450baf45a0876405",
-            petId : "6239df5a4bece9463dc5cfcd"
+            petId : "623d565ce37f09a6045eaa72"
         });
-        expect(responce.statusCode).toBe(200);
+        if (responce) {
+            expect(responce.statusCode).toBe(200);
+        }
+        else expect(responce.statusCode).toBe(404);
     });
 
     test('should return a status code of 200 if the server can show the adopts', async ()=>{
