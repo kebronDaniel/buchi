@@ -4,6 +4,28 @@ const mongoose = require('mongoose');
 const {Pet,validate} = require('../models/pet');
 const multer = require('multer');
 
+
+
+async function getAllPets(req, res) {
+    const limit = parseInt(req.query.limit);
+    const filter = req.query;
+    delete filter.limit;
+    const pets = await Pet.find(filter)
+        .limit(limit)
+        .select('-_id -__v');
+
+    res.send({"status" : "success", "pets" : pets});
+}
+router.get('', getAllPets);
+
+async function getPet(req, res) {
+    const pet =  await Pet.findOne({_id : req.params.id}).select();
+    if (!pet) return res.status(404).send("Pet not found");
+    res.send(pet);
+}
+router.get('/:id/:limit', getPet);
+
+// This part is for the image uploading 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
       cb(null, './uploads/');
@@ -30,24 +52,6 @@ const upload = multer({
     fileFilter: fileFilter
 });
 
-async function getAllPets(req, res) {
-    const limit = parseInt(req.query.limit);
-    const filter = req.query;
-    delete filter.limit;
-    const pets = await Pet.find(filter)
-        .limit(limit)
-        .select('-_id -__v');
-
-    res.send({"status" : "success", "pets" : pets});
-}
-router.get('', getAllPets);
-
-async function getPet(req, res) {
-    const pet =  await Pet.findOne({_id : req.params.id}).select();
-    if (!pet) return res.status(404).send("Pet not found");
-    res.send(pet);
-}
-router.get('/:id/:limit', getPet);
 
 async function createPet(req, res){
     
@@ -69,7 +73,7 @@ async function createPet(req, res){
     }
     else res.status(500).send("Something went wrong while saving the new pet, please try again");
 }
-router.post('',upload.single('productImage'),createPet);
+router.post('',upload.array('Images', 4),createPet);
 
 async function updatePet(req, res) {
 

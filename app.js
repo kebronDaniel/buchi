@@ -18,7 +18,7 @@ mongoose.connect(process.env.DB_connection_string).
 
 app.use(bodyParser.json({limit : '50mb'}));
 app.use(bodyParser.urlencoded({extended : true, limit : '50mb', parameterLimit : 50000}));
-app.use(express.static('public'));
+app.use('/uploads', express.static('uploads'));
 app.use(morgan("dev"));
 
 app.use((req, res, next) => {
