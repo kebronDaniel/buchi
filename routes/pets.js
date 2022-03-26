@@ -14,7 +14,10 @@ async function getAllPets(req, res) {
     const pets = await Pet.find(filter)
         .limit(limit)
         .select('-_id -__v');
-
+    if(pets.length === 0) {
+        res.send("No pets are found");
+        return;
+    }
     res.send({"status" : "success", "pets" : pets});
 }
 router.get('', getAllPets);
@@ -88,18 +91,24 @@ async function updatePet(req, res) {
         return;
     }
 
+    const files = req.files;
+    const photoUrls = [];
+    for (const file of files) {
+        photoUrls.push(`localhost:5000/${file.path}`);
+    }
+
     const pet =  await Pet.update({_id : req.params.id}, {
         $set : {
             type : req.body.type,
             gender : req.body.gender,
             age : req.body.age,
             goodWithChildren : req.body.goodWithChildren,
-            photo : [req.body.photo],
+            photo : photoUrls
         }
     });
     res.send({"status" : "success", "pet_id" : pet._id});
 }
-router.put('/:id', updatePet);
+router.put('/:id',upload.array('Images'),updatePet);
 
 
 async function deletePet(req, res){
