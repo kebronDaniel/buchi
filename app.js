@@ -12,7 +12,7 @@ const morgan = require('morgan');
 dotenv.config();
 
 // Here you can add your mongoDB connection string like : (mongodb://localhost/anyname)
-mongoose.connect('mongodb://mongo:27017/buchi').
+mongoose.connect('mongodb://localhost/buchi').
     then(() => {console.log("connected to the database")}).
     catch(() => {console.log("couldnot connect to the database")});
 
