@@ -49,6 +49,5 @@ function validate(pet){
     return schema.validate(pet);
 }
 
-
 exports.Pet = Pet;
 exports.validate = validate;

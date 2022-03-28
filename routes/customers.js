@@ -7,7 +7,13 @@ const {Customer,validate} = require('../models/customer');
 
 async function getAllCustomers(req, res) {
     const customers = await Customer.find(req.query).select({name : 1, _id : -1});
-    res.send(customers); 
+    if(customers.length === 0){
+        res.send("No customer record found.");
+        return;
+    }
+    else{
+        res.send(customers); 
+    } 
 }
 router.get('', getAllCustomers);
 
@@ -37,25 +43,34 @@ router.post('', createCustomer);
 
 async function updateCustomer(req, res) {
 
-    if (validate(req.body).error) {
-        res.send(validate(req.body).error.details[0].message);
-        return;
-    }
-
-    const customer =  await Customer.update({_id : req.params.id}, {
-        $set : {
-            name : req.body.name,
-            phone : req.body.phone,
+    const getcustomer = await Customer.findOne({_id : req.params.id});
+    if (getcustomer) {
+        if (validate(req.body).error) {
+            res.send(validate(req.body).error.details[0].message);
+            return;
         }
-    });
-    console.log(customer);
-    res.send(customer);
+    
+        const customer =  await Customer.update({_id : req.params.id}, {
+            $set : {
+                name : req.body.name,
+                phone : req.body.phone,
+            }
+        });
+        const updatedCustomer =  await Customer.findOne({_id : req.params.id}).select();
+        res.send(updatedCustomer);
+    }
+    res.status(404).send("The customer you are looking for is not found!");
+
 }
 router.put('/:id', updateCustomer);
 
 async function deleteCustomer(req, res) {
-    const customer = await Customer.deleteOne({_id : req.params.id});
-    res.send(customer);
+    const customer =  await Customer.findOne({_id : req.params.id}).select();
+    if (customer) {
+        customer = await Customer.deleteOne({_id : req.params.id});
+        res.send({"status":"success", "message" : "you have successfully deleted the customer."});
+    }
+    res.status(404).send("Customer not found.")
 }
 router.delete('/:id', deleteCustomer);
 

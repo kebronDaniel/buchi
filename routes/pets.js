@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const {Pet,validate} = require('../models/pet');
 const multer = require('multer');
 const { path } = require('express/lib/application');
+const { MulterError } = require('multer');
 
 
 
@@ -18,7 +19,9 @@ async function getAllPets(req, res) {
         res.send("No pets are found");
         return;
     }
-    res.send({"status" : "success", "pets" : pets});
+    else {
+        res.send({"status" : "success", "pets" : pets});
+    }
 }
 router.get('', getAllPets);
 
@@ -27,9 +30,9 @@ async function getPet(req, res) {
     if (!pet) return res.status(404).send("Pet not found");
     res.send(pet);
 }
-router.get('/:id/:limit', getPet);
+router.get('/:id', getPet);
 
-// This part is for the image uploading 
+// This part is for storage management for image uploading 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
       cb(null, './uploads/');
@@ -39,6 +42,7 @@ const storage = multer.diskStorage({
     }
 });
 
+// this one filters the files to be image formats
 const fileFilter = (req, file, cb) => {
     // reject a file
     if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
@@ -48,6 +52,7 @@ const fileFilter = (req, file, cb) => {
     }
 };
 
+//This one checks for the file size before uploading
 const upload = multer({
     storage: storage,
     limits: {
@@ -86,34 +91,44 @@ router.post('',upload.array('Images'),createPet);
 
 async function updatePet(req, res) {
 
-    if (validate(req.body).error) {
-        res.send(validate(req.body).error.details[0].message);
-        return;
-    }
+    const getpet = await Pet.findOne({_id: req.params.id});
+    if (getpet) {
 
-    const files = req.files;
-    const photoUrls = [];
-    for (const file of files) {
-        photoUrls.push(`localhost:5000/${file.path}`);
-    }
-
-    const pet =  await Pet.update({_id : req.params.id}, {
-        $set : {
-            type : req.body.type,
-            gender : req.body.gender,
-            age : req.body.age,
-            goodWithChildren : req.body.goodWithChildren,
-            photo : photoUrls
+        if (validate(req.body).error) {
+            res.send(validate(req.body).error.details[0].message);
+            return;
         }
-    });
-    res.send({"status" : "success", "pet_id" : pet._id});
+
+        const files = req.files;
+        const photoUrls = [];
+        for (const file of files) {
+            photoUrls.push(`localhost:5000/${file.path}`);
+        }
+
+        const pet =  await Pet.update({_id : req.params.id}, {
+            $set : {
+                type : req.body.type,
+                gender : req.body.gender,
+                age : req.body.age,
+                goodWithChildren : req.body.goodWithChildren,
+                photo : photoUrls
+            }
+        });
+        const updatedPet =  await Pet.findOne({_id : req.params.id}).select();
+        res.send({"status" : "success", "pet" : updatedPet});
+    }
+    res.status(404).send("There pet you are looking for is not found!");
 }
 router.put('/:id',upload.array('Images'),updatePet);
 
 
 async function deletePet(req, res){
-    const pet = await Pet.deleteOne({_id : req.params.id});
-    res.send(pet);
+    const pet =  await Pet.findOne({_id : req.params.id}).select();
+    if (pet) {
+        pet = await Pet.deleteOne({_id : req.params.id});
+        res.send({"status":"success", "message" : "you have successfully deleted the customer."});
+    }
+    res.status(404).send("Pet not found!");
 }
 router.delete('/:id', deletePet);
 

@@ -28,7 +28,5 @@ function validate(customer){
     return schema.validate(customer);
 }
 
-
-
 exports.Customer = Customer;
 exports.validate = validate;
